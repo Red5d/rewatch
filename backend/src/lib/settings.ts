@@ -17,6 +17,8 @@ export const SETTING_KEYS = [
   'VAPID_PRIVATE_KEY',
   'VAPID_SUBJECT',
   'REGISTRATION_ENABLED',
+  'LEGAL_HOST',
+  'LEGAL_CONTACT',
 ] as const
 export type SettingKey = (typeof SETTING_KEYS)[number]
 

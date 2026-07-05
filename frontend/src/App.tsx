@@ -7,6 +7,7 @@ import { Spinner } from './components/ui'
 import Admin from './screens/Admin'
 import { Setup } from './screens/OpsSettings'
 import Calendar from './screens/Calendar'
+import Legal from './screens/Legal'
 import Login from './screens/Login'
 import { Reset, Verify } from './screens/TokenPages'
 import VerifyGate from './screens/VerifyGate'
@@ -63,6 +64,7 @@ export default function App() {
         }
       />
       <Route path="/reset" element={<Reset />} />
+      <Route path="/legal" element={<Legal />} />
       <Route
         element={
           <RequireAuth>

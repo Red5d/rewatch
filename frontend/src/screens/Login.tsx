@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { api, ApiError } from '../api/client'
@@ -175,14 +175,15 @@ export default function Login() {
         )}
       </div>
 
-      <a
-        href="https://github.com/gulian/rewatch"
-        target="_blank"
-        rel="noreferrer"
-        className="text-dim mt-8 text-center text-[11.5px] font-semibold"
-      >
-        Open source · GitHub
-      </a>
+      <div className="text-dim mt-8 flex items-center justify-center gap-1.5 text-[11.5px] font-semibold">
+        <a href="https://github.com/gulian/rewatch" target="_blank" rel="noreferrer">
+          Open source · GitHub
+        </a>
+        <span>·</span>
+        <Link viewTransition to="/legal">
+          {t('legal.title')}
+        </Link>
+      </div>
     </div>
   )
 }

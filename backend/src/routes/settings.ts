@@ -26,12 +26,21 @@ const valueSchemas: Record<SettingKey, z.ZodType<string>> = {
   VAPID_PRIVATE_KEY: z.string().max(200),
   VAPID_SUBJECT: z.string().startsWith('mailto:').max(320),
   REGISTRATION_ENABLED: z.enum(['true', 'false']),
+  LEGAL_HOST: z.string().max(300),
+  LEGAL_CONTACT: z.string().max(320),
 }
 
 export default async function settingsRoutes(app: FastifyInstance) {
   // Public and unauthenticated on purpose: the login screen needs to know
   // whether this is a fresh instance. Exposes a single boolean, nothing else.
   app.get('/api/setup-status', async () => ({ needsSetup: needsSetup() }))
+
+  // Public: the legal page shows who hosts this instance and how to reach
+  // the operator. Both values are written by the admin and meant to be shown.
+  app.get('/api/legal-info', async () => ({
+    host: getSetting('LEGAL_HOST') ?? null,
+    contact: getSetting('LEGAL_CONTACT') ?? null,
+  }))
 
   app.get('/api/admin/settings', { preHandler: app.requireAdmin }, async () => {
     return SETTING_KEYS.map((key) => {

@@ -442,6 +442,79 @@ function PurgeModal({ onClose }: { onClose: () => void }) {
   )
 }
 
+function DeleteAccountModal({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const [keyword, setKeyword] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const qc = useQueryClient()
+
+  const armed = keyword === t('profile.purgeKeyword')
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setBusy(true)
+    setError(null)
+    try {
+      await api.delete('/api/account', { password })
+      qc.clear()
+      navigate('/login', { replace: true })
+    } catch (err) {
+      setError(err instanceof ApiError && err.status === 401 ? t('profile.purgeWrongPassword') : t('profile.deleteError'))
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 sm:items-center" onClick={onClose}>
+      <form
+        onSubmit={submit}
+        onClick={(e) => e.stopPropagation()}
+        className="bg-surface border-danger/30 w-full max-w-md rounded-t-3xl border p-6 sm:rounded-3xl"
+      >
+        <div className="text-danger text-lg font-extrabold">{t('profile.deleteModalTitle')}</div>
+        <div className="text-soft mt-2 text-[13px] leading-relaxed [&_b]:font-extrabold">
+          <Trans i18nKey="profile.deleteModalText" components={{ b: <b /> }} />
+        </div>
+        <div className="mt-4 flex flex-col gap-3">
+          <div>
+            <div className="text-muted mb-1.5 text-xs font-bold">
+              <Trans i18nKey="profile.purgeTypeToConfirm" components={{ kw: <span className="text-danger font-extrabold" /> }} />
+            </div>
+            <input
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              className="bg-card placeholder:text-dim w-full rounded-[14px] border border-white/8 px-4 py-3.5 text-[14.5px] font-semibold outline-none"
+              autoCapitalize="characters"
+            />
+          </div>
+          <input
+            type="password"
+            placeholder={t('profile.purgePassword')}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="bg-card placeholder:text-dim rounded-[14px] border border-white/8 px-4 py-3.5 text-[14.5px] font-semibold outline-none"
+            autoComplete="current-password"
+          />
+          {error && <div className="text-danger text-[13px] font-semibold">{error}</div>}
+          <button
+            type="submit"
+            disabled={!armed || !password || busy}
+            className="bg-danger rounded-[14px] py-3.5 text-[15px] font-extrabold text-white disabled:opacity-40"
+          >
+            {busy ? t('profile.purging') : t('profile.deleteButton')}
+          </button>
+          <button type="button" onClick={onClose} className="text-muted py-1 text-center text-[13px] font-bold">
+            {t('common.cancel')}
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
 export default function Profile() {
   const { t, i18n } = useTranslation()
   const { data: me } = useMe()
@@ -450,6 +523,7 @@ export default function Profile() {
   const [showPassword, setShowPassword] = useState(false)
   const [showEmail, setShowEmail] = useState(false)
   const [showPurge, setShowPurge] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
   const [resent, setResent] = useState(false)
   const navigate = useNavigate()
   const qc = useQueryClient()
@@ -632,12 +706,28 @@ export default function Profile() {
             </div>
             <span className="text-danger">›</span>
           </button>
+          {!me.isAdmin && (
+            <button
+              type="button"
+              onClick={() => setShowDelete(true)}
+              className="border-danger/20 flex w-full items-center justify-between border-t px-4 py-3.5"
+            >
+              <div className="text-left">
+                <div className="text-danger text-sm font-bold">{t('profile.deleteAccountTitle')}</div>
+                <div className="text-dim mt-0.5 text-[11.5px] font-semibold">{t('profile.deleteAccountHint')}</div>
+              </div>
+              <span className="text-danger">›</span>
+            </button>
+          )}
         </div>
 
         <div className="flex flex-col items-center gap-1.5 pt-2 pb-1 text-center">
           <div className="text-dim text-[12px] font-semibold">
             Made with <span className="text-accent">♥</span> by gulian
           </div>
+          <Link viewTransition to="/legal" className="text-dim text-[11px] font-semibold underline underline-offset-2">
+            {t('profile.legalLink')}
+          </Link>
           <a
             href="https://www.themoviedb.org/"
             target="_blank"
@@ -651,6 +741,7 @@ export default function Profile() {
       {showPassword && <PasswordModal onClose={() => setShowPassword(false)} />}
       {showEmail && <EmailModal current={me.email} onClose={() => setShowEmail(false)} />}
       {showPurge && <PurgeModal onClose={() => setShowPurge(false)} />}
+      {showDelete && <DeleteAccountModal onClose={() => setShowDelete(false)} />}
     </div>
   )
 }

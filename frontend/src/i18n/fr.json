@@ -166,7 +166,14 @@
     "openSource": "Rewatch est open source",
     "openSourceHint": "Code source et releases sur GitHub",
     "openIssue": "Un bug ? Une idée ?",
-    "openIssueHint": "Ouvrir une issue sur GitHub"
+    "openIssueHint": "Ouvrir une issue sur GitHub",
+    "deleteAccountTitle": "Supprimer mon compte",
+    "deleteAccountHint": "Compte, historique, tout — effacé définitivement",
+    "deleteModalTitle": "Supprimer votre compte ?",
+    "deleteModalText": "Votre compte et tout ce qu'il contient seront <b>définitivement effacés</b>. Il n'y a <b>aucun moyen de revenir en arrière</b>. Astuce : exportez d'abord vos données si vous voulez en garder une copie.",
+    "deleteButton": "Supprimer mon compte",
+    "deleteError": "Erreur — compte inchangé",
+    "legalLink": "Confidentialité & mentions légales"
   },
   "resolve": {
     "title": "À résoudre",
@@ -317,7 +324,11 @@
     "wizNext": "Continuer",
     "wizFinish": "Terminer",
     "wizDone": "Instance configurée. Bon visionnage.",
-    "wizOpenApp": "Ouvrir l'app"
+    "wizOpenApp": "Ouvrir l'app",
+    "legalHost": "Hébergeur",
+    "legalHostHint": "affiché sur la page légale",
+    "legalContact": "Contact opérateur",
+    "legalContactHint": "affiché sur la page légale"
   },
   "tvhelp": {
     "title": "Récupérer ses données TV Time",
@@ -337,5 +348,19 @@
     "step5Title": "Importe-le dans Rewatch",
     "step5Text": "Dépose le zip dans la section import de ton profil. Épisodes, séries, films, notes et watchlist reviennent en quelques minutes.",
     "cta": "J'ai mon fichier — l'importer"
+  },
+  "legal": {
+    "title": "Confidentialité & mentions légales",
+    "operator": "Cette instance de Rewatch est opérée à titre personnel et non commercial : pas de publicité, pas de traqueurs, pas de mesure d'audience, et vos données ne sont jamais vendues ni partagées.",
+    "contactLabel": "Contact",
+    "dataTitle": "Données collectées",
+    "dataText": "Un pseudo, une adresse email (uniquement pour récupérer votre compte), un mot de passe haché, et l'historique que vous construisez ou importez : séries suivies, épisodes et films vus, notes, watchlist. Rien d'autre. Les données sont conservées tant que votre compte existe.",
+    "rightsTitle": "Vos droits",
+    "rightsText": "Tout se fait en autonomie depuis votre profil : exporter l'intégralité de votre historique en JSON (accès et portabilité), changer votre email ou mot de passe (rectification), supprimer votre historique ou votre compte entier (effacement). Pour toute autre demande, contactez l'opérateur.",
+    "cookiesTitle": "Cookies",
+    "cookiesText": "Un seul cookie de session vous garde connecté. Il est strictement nécessaire au fonctionnement du service, aucun bandeau de consentement n'est donc requis. Aucun cookie tiers.",
+    "hostTitle": "Hébergement",
+    "sourceTitle": "Code source",
+    "sourceText": "Rewatch est un logiciel libre sous licence AGPL-3.0. Le code source de ce service est disponible sur GitHub."
   }
 }

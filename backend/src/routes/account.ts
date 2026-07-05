@@ -4,6 +4,7 @@ import argon2 from 'argon2'
 import { z } from 'zod'
 import { prisma } from '../lib/prisma.js'
 import { localizeMovies, localizeShows } from '../lib/catalog.js'
+import { SESSION_COOKIE } from '../lib/session.js'
 
 export default async function accountRoutes(app: FastifyInstance) {
   // Full export of the user's tracking data as a portable JSON file.
@@ -119,6 +120,30 @@ export default async function accountRoutes(app: FastifyInstance) {
           importJobs: jobs.count,
         },
       }
+    },
+  )
+
+  // Deletes the account itself and everything it owns (relations cascade).
+  // Self-service GDPR erasure. Admins must be demoted first: deleting the
+  // last admin would orphan the instance.
+  app.delete(
+    '/api/account',
+    { preHandler: app.requireAuth, config: { rateLimit: { max: 3, timeWindow: '1 minute' } } },
+    async (request, reply) => {
+      const body = z.object({ password: z.string().min(1) }).safeParse(request.body)
+      if (!body.success) return reply.code(400).send({ error: 'invalid_input' })
+
+      const userId = request.user!.id
+      const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } })
+      if (user.isAdmin) return reply.code(400).send({ error: 'cannot_delete_admin' })
+      if (!(await argon2.verify(user.passwordHash, body.data.password))) {
+        return reply.code(401).send({ error: 'invalid_credentials' })
+      }
+
+      await prisma.user.delete({ where: { id: userId } })
+      app.log.warn({ userId, username: user.username }, 'account self-deleted')
+      reply.clearCookie(SESSION_COOKIE, { path: '/' })
+      return { ok: true }
     },
   )
 }

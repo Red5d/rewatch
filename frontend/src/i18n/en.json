@@ -166,7 +166,14 @@
     "openSource": "Rewatch is open source",
     "openSourceHint": "Source code and releases on GitHub",
     "openIssue": "Found a bug? Have an idea?",
-    "openIssueHint": "Open an issue on GitHub"
+    "openIssueHint": "Open an issue on GitHub",
+    "deleteAccountTitle": "Delete my account",
+    "deleteAccountHint": "Account, history, everything — erased for good",
+    "deleteModalTitle": "Delete your account?",
+    "deleteModalText": "Your account and everything it contains will be <b>permanently erased</b>. There is <b>no way back</b>. Tip: export your data first if you want to keep a copy.",
+    "deleteButton": "Delete my account",
+    "deleteError": "Error — account unchanged",
+    "legalLink": "Privacy & legal notice"
   },
   "resolve": {
     "title": "To resolve",
@@ -317,7 +324,11 @@
     "wizNext": "Continue",
     "wizFinish": "Finish",
     "wizDone": "Instance configured. Happy watching.",
-    "wizOpenApp": "Open the app"
+    "wizOpenApp": "Open the app",
+    "legalHost": "Hosting provider",
+    "legalHostHint": "shown on the legal page",
+    "legalContact": "Operator contact",
+    "legalContactHint": "shown on the legal page"
   },
   "tvhelp": {
     "title": "Get your TV Time data",
@@ -337,5 +348,19 @@
     "step5Title": "Import it into Rewatch",
     "step5Text": "Drop the zip in the import section of your profile. Episodes, shows, movies, ratings and watchlist come back in a few minutes.",
     "cta": "I have my file — import it"
+  },
+  "legal": {
+    "title": "Privacy & legal notice",
+    "operator": "This Rewatch instance is run on a personal, non-commercial basis: no ads, no trackers, no analytics, and your data is never sold or shared.",
+    "contactLabel": "Contact",
+    "dataTitle": "What is collected",
+    "dataText": "A username, an email address (only used to recover your account), a hashed password, and the watch history you build or import: shows followed, episodes and movies watched, ratings, watchlist. Nothing else. Data is kept as long as your account exists.",
+    "rightsTitle": "Your rights",
+    "rightsText": "Everything is self-service from your profile: export your full history as JSON (access and portability), change your email or password (rectification), delete your history or your entire account (erasure). For any other request, contact the operator.",
+    "cookiesTitle": "Cookies",
+    "cookiesText": "A single session cookie keeps you signed in. It is strictly necessary for the service, so no consent banner is required. There are no third-party cookies.",
+    "hostTitle": "Hosting",
+    "sourceTitle": "Source code",
+    "sourceText": "Rewatch is free software under the AGPL-3.0 license. The source code of this service is available on GitHub."
   }
 }
