@@ -15,6 +15,9 @@ function headers(accessToken?: string): Record<string, string> {
     'Content-Type': 'application/json',
     'trakt-api-version': '2',
     'trakt-api-key': getSetting('TRAKT_CLIENT_ID') ?? '',
+    // Trakt sits behind Cloudflare, which 403s UA-less requests — and
+    // Node's fetch sends no User-Agent by default.
+    'User-Agent': 'Rewatch (github.com/gulian/rewatch)',
     ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
   }
 }

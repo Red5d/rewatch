@@ -102,15 +102,22 @@ export default function Trakt() {
   const qc = useQueryClient()
   const { data: me } = useMe()
   const [connecting, setConnecting] = useState(false)
+  const [connectError, setConnectError] = useState(false)
   const [activeJob, setActiveJob] = useState<{ id: number; source: 'TRAKT' | 'TRAKT_EXPORT' } | null>(null)
   const { data: status } = useTraktStatus(connecting)
 
   const job = activeJob ?? status?.runningJob ?? null
 
   const connect = async () => {
+    setConnectError(false)
     setConnecting(true)
-    await api.post('/api/trakt/connect')
-    await qc.invalidateQueries({ queryKey: ['trakt-status'] })
+    try {
+      await api.post('/api/trakt/connect')
+      await qc.invalidateQueries({ queryKey: ['trakt-status'] })
+    } catch {
+      setConnectError(true)
+      setConnecting(false)
+    }
   }
 
   const disconnect = async () => {
@@ -191,6 +198,7 @@ export default function Trakt() {
               >
                 {t('trakt.connectButton')}
               </button>
+              {connectError && <div className="text-danger text-[12.5px] font-semibold">{t('trakt.connectError')}</div>}
             </div>
           )
         ) : (

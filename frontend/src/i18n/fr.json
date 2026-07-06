@@ -426,6 +426,7 @@
     "phaseFetch": "Lecture de l'historique Trakt",
     "phaseShows": "Récupération des séries",
     "phaseMovies": "Récupération des films",
-    "phasePush": "Envoi vers Trakt"
+    "phasePush": "Envoi vers Trakt",
+    "connectError": "Impossible de joindre Trakt. Réessaie — si ça persiste, vérifie le client id/secret dans la console admin."
   }
 }
