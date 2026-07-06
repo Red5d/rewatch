@@ -2,7 +2,7 @@
 import type { FastifyInstance } from 'fastify'
 import { prisma } from '../lib/prisma.js'
 import { pollDeviceToken, saveTokens, startDeviceFlow, traktConfigured } from '../lib/trakt.js'
-import { runTraktExport, runTraktImport } from '../lib/trakt-sync.js'
+import { runTraktExport, runTraktImport, runTraktPull } from '../lib/trakt-sync.js'
 
 // One pending device-code flow per user. Trakt is polled on demand from the
 // status endpoint (the client already polls it, and refetches on focus): the
@@ -86,6 +86,22 @@ export default async function traktRoutes(app: FastifyInstance) {
     })
 
     return { userCode: code.user_code, verificationUrl: code.verification_url }
+  })
+
+  // Called on every app open/foreground. Cheap by design: one DB lookup when
+  // Trakt isn't in play, one last_activities call otherwise. Per-user throttle.
+  const lastPullRequest = new Map<number, number>()
+  app.post('/api/trakt/pull', { preHandler: app.requireAuth }, async (request) => {
+    const userId = request.user!.id
+    const last = lastPullRequest.get(userId) ?? 0
+    if (Date.now() - last < 60_000) return { skipped: 'throttled' }
+    lastPullRequest.set(userId, Date.now())
+    try {
+      return await runTraktPull(userId)
+    } catch (err) {
+      request.log.warn({ err }, 'trakt pull failed')
+      return { skipped: 'error' }
+    }
   })
 
   app.post('/api/trakt/disconnect', { preHandler: app.requireAuth }, async (request) => {

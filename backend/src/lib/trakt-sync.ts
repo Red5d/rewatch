@@ -3,7 +3,7 @@
 // import_jobs, idempotent DB writes.
 import { prisma } from './prisma.js'
 import { cacheMovie, cacheShow } from './catalog.js'
-import { apiPost, getHistory, getRatings, getWatchlist } from './trakt.js'
+import { apiPost, getHistory, getHistorySince, getLastActivities, getRatings, getWatchlist } from './trakt.js'
 import { FollowState, Prisma } from '../generated/prisma/client.js'
 
 async function setProgress(jobId: number, phase: string, done: number, total: number) {
@@ -210,6 +210,84 @@ export function runTraktExport(jobId: number, userId: number): Promise<void> {
 
     return { pushed: added, skipped, candidates: pushCount }
   })
+}
+
+// ——— Pull: Trakt → Rewatch additions, on app open ———
+
+const dayOf = (d: Date | string) => new Date(d).toISOString().slice(0, 10)
+
+/**
+ * Brings new Trakt plays into Rewatch (additions only — removals never
+ * propagate). Cheap when idle: one last_activities call against the stored
+ * watermark. First call after connecting just sets the baseline: the full
+ * backfill is the import's job.
+ */
+export async function runTraktPull(userId: number): Promise<{ episodes: number; movies: number } | { skipped: string }> {
+  const account = await prisma.traktAccount.findUnique({ where: { userId } })
+  if (!account?.mirrorEnabled) return { skipped: 'mirror_disabled' }
+
+  const acts = await getLastActivities(userId)
+  const latest = Math.max(
+    acts.episodes?.watched_at ? new Date(acts.episodes.watched_at).getTime() : 0,
+    acts.movies?.watched_at ? new Date(acts.movies.watched_at).getTime() : 0,
+  )
+  if (!account.lastPullAt) {
+    await prisma.traktAccount.update({ where: { userId }, data: { lastPullAt: new Date() } })
+    return { skipped: 'baseline_set' }
+  }
+  if (latest <= account.lastPullAt.getTime()) return { skipped: 'up_to_date' }
+
+  const pullStartedAt = new Date()
+  const history = await getHistorySince(userId, account.lastPullAt)
+
+  // Cache unknown shows/movies, then insert with a same-day dedupe: our own
+  // mirrored pushes come back with second-rounded timestamps, and a strict
+  // unique constraint would let those through as near-duplicates.
+  let episodes = 0
+  let movies = 0
+  for (const h of history) {
+    if (h.type === 'episode' && h.show?.ids.tmdb && h.episode) {
+      const showTmdbId = h.show.ids.tmdb
+      if (!(await prisma.show.findUnique({ where: { tmdbId: showTmdbId } }))) await cacheShow(showTmdbId)
+      const ep = await prisma.episode.findFirst({
+        where: { showTmdbId, season: h.episode.season, number: h.episode.number },
+      })
+      if (!ep) continue
+      const watchedAt = new Date(h.watched_at)
+      const existing = await prisma.watchEvent.findFirst({
+        where: {
+          userId,
+          episodeId: ep.id,
+          watchedAt: { gte: new Date(dayOf(watchedAt)), lt: new Date(new Date(dayOf(watchedAt)).getTime() + 86_400_000) },
+        },
+      })
+      if (existing) continue
+      await prisma.watchEvent.create({ data: { userId, episodeId: ep.id, watchedAt } })
+      await prisma.follow.upsert({
+        where: { userId_showTmdbId: { userId, showTmdbId } },
+        create: { userId, showTmdbId, state: FollowState.WATCHING, isFavorite: false },
+        update: {},
+      })
+      episodes++
+    } else if (h.type === 'movie' && h.movie?.ids.tmdb) {
+      const movieTmdbId = h.movie.ids.tmdb
+      await cacheMovie(movieTmdbId)
+      const watchedAt = new Date(h.watched_at)
+      const existing = await prisma.watchEvent.findFirst({
+        where: {
+          userId,
+          movieId: movieTmdbId,
+          watchedAt: { gte: new Date(dayOf(watchedAt)), lt: new Date(new Date(dayOf(watchedAt)).getTime() + 86_400_000) },
+        },
+      })
+      if (existing) continue
+      await prisma.watchEvent.create({ data: { userId, movieId: movieTmdbId, watchedAt } })
+      movies++
+    }
+  }
+
+  await prisma.traktAccount.update({ where: { userId }, data: { lastPullAt: pullStartedAt } })
+  return { episodes, movies }
 }
 
 // ——— Live mirror (V2) ———

@@ -1,4 +1,7 @@
+import { useEffect } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
+import { api } from '../api/client'
 import { useTranslation } from 'react-i18next'
 import { useMe, useStats } from '../api/hooks'
 import { minutesToDaysHours } from '../lib/format'
@@ -31,12 +34,39 @@ function TabIcon({ d, fill, active, size = 22 }: { d: string; fill: boolean; act
   )
 }
 
+// Pull new Trakt plays when the app opens or comes back to the foreground
+// (visibilitychange fires on PWA resume, even after iOS suspended the JS).
+// The server answers in one DB lookup when Trakt isn't in play.
+function useTraktPullOnOpen() {
+  const qc = useQueryClient()
+  useEffect(() => {
+    let lastRun = 0
+    const pull = async () => {
+      if (Date.now() - lastRun < 60_000) return
+      lastRun = Date.now()
+      try {
+        const result = await api.post<{ episodes?: number; movies?: number; skipped?: string }>('/api/trakt/pull')
+        if ((result.episodes ?? 0) + (result.movies ?? 0) > 0) await qc.invalidateQueries()
+      } catch {
+        /* offline or logged out — never bother the user */
+      }
+    }
+    void pull()
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void pull()
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
+  }, [qc])
+}
+
 export default function Layout() {
   const { t } = useTranslation()
   const { data: me } = useMe()
   const { data: stats } = useStats()
   const lens = useLensSupport()
   const location = useLocation()
+  useTraktPullOnOpen()
 
   // Tapping the tab of the section already on screen scrolls it back to top.
   const onTabClick = (to: string) => {

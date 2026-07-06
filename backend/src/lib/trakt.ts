@@ -168,5 +168,9 @@ export type TraktWatchlistItem = {
 
 export const getHistory = (userId: number, onPage?: (p: number, t: number) => void) =>
   apiGetAll<TraktHistoryItem>(userId, '/sync/history', onPage)
+export const getHistorySince = (userId: number, since: Date) =>
+  apiGetAll<TraktHistoryItem>(userId, `/sync/history?start_at=${encodeURIComponent(since.toISOString())}`)
+export const getLastActivities = (userId: number) =>
+  apiGet<{ episodes?: { watched_at?: string }; movies?: { watched_at?: string } }>(userId, '/sync/last_activities')
 export const getRatings = (userId: number) => apiGetAll<TraktRatingItem>(userId, '/sync/ratings')
 export const getWatchlist = (userId: number) => apiGetAll<TraktWatchlistItem>(userId, '/sync/watchlist')
