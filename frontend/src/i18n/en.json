@@ -398,7 +398,7 @@
     "desktop": "Computer",
     "alreadyInstalled": "You're already using the installed app — nothing to do.",
     "nativeButton": "Install Rewatch",
-    "nativeDone": "Installed! Look for the Rewatch icon.",
+    "nativeDone": "Installed — look for the Rewatch icon.",
     "iosStep1Title": "Open {{host}} in Safari",
     "iosStep1Text": "The install option only exists in Safari.",
     "iosSafariWarnLabel": "Coming from Instagram or another app?",
