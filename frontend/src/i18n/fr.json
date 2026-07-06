@@ -427,6 +427,8 @@
     "phaseShows": "Récupération des séries",
     "phaseMovies": "Récupération des films",
     "phasePush": "Envoi vers Trakt",
-    "connectError": "Impossible de joindre Trakt. Réessaie — si ça persiste, vérifie le client id/secret dans la console admin."
+    "connectError": "Impossible de joindre Trakt. Réessaie — si ça persiste, vérifie le client id/secret dans la console admin.",
+    "copyCode": "Copier le code",
+    "copied": "Copié ✓"
   }
 }

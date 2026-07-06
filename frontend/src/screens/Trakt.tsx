@@ -103,6 +103,7 @@ export default function Trakt() {
   const { data: me } = useMe()
   const [connecting, setConnecting] = useState(false)
   const [connectError, setConnectError] = useState(false)
+  const [copied, setCopied] = useState(false)
   const [activeJob, setActiveJob] = useState<{ id: number; source: 'TRAKT' | 'TRAKT_EXPORT' } | null>(null)
   const { data: status } = useTraktStatus(connecting)
 
@@ -175,6 +176,17 @@ export default function Trakt() {
               <div className="text-accent text-[34px] font-extrabold tracking-[0.2em] tabular-nums">
                 {status.pendingCode.userCode}
               </div>
+              <button
+                type="button"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(status.pendingCode!.userCode)
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 2000)
+                }}
+                className={`text-[12.5px] font-bold ${copied ? 'text-green' : 'text-accent'}`}
+              >
+                {copied ? t('trakt.copied') : t('trakt.copyCode')}
+              </button>
               <a
                 href={status.pendingCode.verificationUrl}
                 target="_blank"

@@ -427,6 +427,8 @@
     "phaseShows": "Fetching shows",
     "phaseMovies": "Fetching movies",
     "phasePush": "Sending to Trakt",
-    "connectError": "Could not reach Trakt. Try again — if it persists, check the client id/secret in the admin console."
+    "connectError": "Could not reach Trakt. Try again — if it persists, check the client id/secret in the admin console.",
+    "copyCode": "Copy the code",
+    "copied": "Copied ✓"
   }
 }
