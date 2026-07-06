@@ -18,7 +18,11 @@ import statsRoutes from './routes/stats.js'
 import trackingRoutes from './routes/tracking.js'
 
 export async function buildApp() {
-  const app = Fastify({ logger: true })
+  // trustProxy: behind a reverse proxy the client IP comes from X-Forwarded-For.
+  // Without it every request appears to come from the proxy and the per-IP rate
+  // limits are shared by all users. Set TRUST_PROXY=false only when the node
+  // port is exposed directly (clients could otherwise spoof the header).
+  const app = Fastify({ logger: true, trustProxy: (process.env.TRUST_PROXY ?? 'true') !== 'false' })
 
   await app.register(cookie)
   await app.register(multipart, { limits: { fileSize: 30 * 1024 * 1024, files: 1 } })

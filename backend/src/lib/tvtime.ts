@@ -60,6 +60,13 @@ function readCsv(zip: AdmZip, filename: string): Record<string, string>[] {
 export function parseTvTimeExport(zipBuffer: Buffer): TvTimeExport {
   const zip = new AdmZip(zipBuffer)
 
+  // Zip-bomb guard: entries decompress in memory, so cap the declared
+  // uncompressed size. Real exports are a few MB; 300MB is very generous.
+  const totalUncompressed = zip.getEntries().reduce((sum, e) => sum + e.header.size, 0)
+  if (totalUncompressed > 300 * 1024 * 1024) {
+    throw new Error('zip decompresses to over 300MB — not a TV Time export')
+  }
+
   // — Episodes + show metadata: tracking-prod-records-v2.csv (source of truth)
   const v2 = readCsv(zip, 'tracking-prod-records-v2.csv')
   if (v2.length === 0) {
