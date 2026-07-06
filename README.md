@@ -27,22 +27,15 @@ Installable PWA, multi-user, English and French, dark and light themes.
 
 ## Features
 
-- **Episode and movie tracking** with the classic one-tap check button on your next episode
-- **TV Time import**: upload your GDPR export zip, get your history back (episodes, shows with their states, movies, ratings). Ambiguous movie titles go through a manual resolution screen
-- **Trakt.tv sync**: link your account in one tap (device code), import your Trakt history, export Rewatch to Trakt, or mirror your check-ins live in both directions — additions only, nothing ever deletes your data
-- **Up next**: one card per followed show with the next unwatched episode, shows/movies tabs, quick filter
-- **Calendar** of upcoming releases for the shows you follow
-- **Ratings and favorites** on shows and movies, surfaced in stats as your best-of, with a library filter to find them again
-- **Cast** with photos on every show and movie page
-- **Stats**: total screen time, monthly activity, genre breakdown, top shows by time spent, best ratings, favorites
-- **Push notifications** the day an episode airs (Web Push, per-device opt-in)
-- **Built-in guides**: install-as-app tutorial per platform, TV Time export walkthrough
-- **Dark, light or system theme**, per device
-- **Full account auth**: email verification, password reset, session revocation
-- **Two languages** (en/fr), per-account, covering the UI, emails, push messages and cached TMDB metadata
+- **Episode and movie tracking** with the classic one-tap check on your next episode
+- **TV Time import**: upload your GDPR export zip and get everything back — episodes, shows and their states, movies, ratings. Ambiguous movie titles go through a manual resolution screen
+- **Trakt.tv sync**: import, export, and an optional live mirror of your check-ins
+- **Up next** list, release **calendar**, ratings and favorites
+- **Stats**: screen time, monthly activity, genres, top shows, your best-of
+- **Push notifications** the day an episode airs
+- **English and French**, per account — UI, emails, push messages and TMDB metadata
 - **Data export**: your complete history as portable JSON with TMDB and TVDB ids
-- **Admin console** with live telemetry (latency percentiles, throughput, online users) and account management
-- **Privacy-ready**: optional legal/privacy page for instances hosting third-party users, self-service account deletion
+- **Admin console** with live telemetry and account management
 
 Metadata comes from [TMDB](https://www.themoviedb.org/). You need a free TMDB API key to run an instance.
 
@@ -116,7 +109,7 @@ Serve `frontend/dist` as static files and proxy `/api/` to the backend port (ngi
 
 ### Configuration
 
-Everything except `DATABASE_URL` is configurable from the admin console (`/admin`, Settings panel): TMDB key and cache language, public URL, SMTP, Web Push keys, open/closed signups. Environment variables with the same names ([`backend/.env.example`](backend/.env.example)) always take precedence when set, so config-as-code deployments work too — the console shows those values as locked.
+Everything except `DATABASE_URL` is configurable from the admin console (`/admin`, Settings panel): TMDB key and cache language, public URL, SMTP, Web Push keys, open/closed signups, and an optional privacy/legal page if your instance hosts other people. Environment variables with the same names ([`backend/.env.example`](backend/.env.example)) always take precedence when set, so config-as-code deployments work too — the console shows those values as locked.
 
 ### Admin
 
