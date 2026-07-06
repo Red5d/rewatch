@@ -171,6 +171,7 @@ export default function UpNext() {
   const { data: setup } = useSetupStatus()
   const navigate = useNavigate()
   const [filter, setFilter] = useState('')
+  const [tab, setTab] = useState<'shows' | 'movies'>('shows')
 
   // Fresh instance: the operator lands in the setup wizard first.
   useEffect(() => {
@@ -253,7 +254,7 @@ export default function UpNext() {
             <input
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              placeholder={t('upnext.filterPlaceholder')}
+              placeholder={t(tab === 'movies' ? 'upnext.filterPlaceholderMovies' : 'upnext.filterPlaceholder')}
               className="placeholder:text-dim w-full bg-transparent text-[14px] font-semibold outline-none"
             />
             {query && (
@@ -262,37 +263,50 @@ export default function UpNext() {
               </button>
             )}
           </label>
-          {query && filteredShows.length === 0 && filteredMovies.length === 0 && (
+          {data.movies.length > 0 && (
+            <div className="flex gap-1.5 py-0.5">
+              {(['shows', 'movies'] as const).map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setTab(key)}
+                  className={`flex-none rounded-full border px-3.5 py-1.5 text-[12px] font-extrabold transition-colors ${
+                    tab === key ? 'border-accent bg-accent text-ink' : 'text-muted border-border bg-transparent'
+                  }`}
+                >
+                  {key === 'shows'
+                    ? `${t('upnext.tabShows')} · ${data.shows.length}`
+                    : `${t('upnext.tabMovies')} · ${data.movies.length}`}
+                </button>
+              ))}
+            </div>
+          )}
+          {query && (tab === 'shows' ? filteredShows : filteredMovies).length === 0 && (
             <div className="text-dim py-8 text-center text-sm">{t('upnext.filterNoMatch')}</div>
           )}
-          <div className="flex flex-col gap-2.5 lg:grid lg:grid-cols-2 lg:gap-3.5">
-            {filteredShows.slice(0, visible).map((s) => (
-              <UpNextCard key={s.show.tmdbId} item={s} />
-            ))}
-          </div>
-          {visible < filteredShows.length && <div ref={sentinelRef} className="h-1" />}
-          {filteredMovies.length > 0 && (
+          {tab === 'shows' ? (
             <>
-              <div className="flex items-baseline justify-between px-1 pt-3.5 pb-0.5">
-                <div className="text-[17px] font-extrabold lg:text-lg">{t('upnext.moviesToWatch')}</div>
-                <div className="text-muted text-[12.5px] font-semibold">
-                  {t('upnext.moviesCount', { count: filteredMovies.length })}
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-3 px-1 py-0.5 sm:grid-cols-4 lg:grid-cols-6 lg:gap-4">
-                {filteredMovies.map((m) => (
-                  <Link viewTransition key={m.tmdbId} to={`/movie/${m.tmdbId}`} className="flex flex-col gap-1.75">
-                    <Poster path={m.posterPath} title={m.title} size="w185" className="aspect-[2/3] w-full rounded-[13px] text-lg" />
-                    <div className="truncate text-xs font-semibold lg:text-[12.5px]">{m.title}</div>
-                    <div className="text-dim -mt-1 text-[11px]">
-                      {[m.releaseDate ? frDate(m.releaseDate, { year: 'numeric' }) : null, runtimeLabel(m.runtime)]
-                        .filter(Boolean)
-                        .join(' · ')}
-                    </div>
-                  </Link>
+              <div className="flex flex-col gap-2.5 lg:grid lg:grid-cols-2 lg:gap-3.5">
+                {filteredShows.slice(0, visible).map((s) => (
+                  <UpNextCard key={s.show.tmdbId} item={s} />
                 ))}
               </div>
+              {visible < filteredShows.length && <div ref={sentinelRef} className="h-1" />}
             </>
+          ) : (
+            <div className="grid grid-cols-3 gap-3 px-1 py-0.5 sm:grid-cols-4 lg:grid-cols-6 lg:gap-4">
+              {filteredMovies.map((m) => (
+                <Link viewTransition key={m.tmdbId} to={`/movie/${m.tmdbId}`} className="flex flex-col gap-1.75">
+                  <Poster path={m.posterPath} title={m.title} size="w185" className="aspect-[2/3] w-full rounded-[13px] text-lg" />
+                  <div className="truncate text-xs font-semibold lg:text-[12.5px]">{m.title}</div>
+                  <div className="text-dim -mt-1 text-[11px]">
+                    {[m.releaseDate ? frDate(m.releaseDate, { year: 'numeric' }) : null, runtimeLabel(m.runtime)]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </div>
+                </Link>
+              ))}
+            </div>
           )}
         </div>
       )}

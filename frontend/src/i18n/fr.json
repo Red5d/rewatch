@@ -25,9 +25,6 @@
     "remainingInSeason_other": "{{count}} épisodes restants · Saison {{season}}",
     "behind": "{{count}} épisodes de retard",
     "lastOfSeason": "Dernier épisode de la saison",
-    "moviesToWatch": "Films à voir",
-    "moviesCount": "{{count}} film",
-    "moviesCount_other": "{{count}} films",
     "emptyTitle1": "Rien à regarder…",
     "emptyTitle2": "pour l'instant",
     "emptyText": "Suivez vos premières séries et vos prochains épisodes apparaîtront ici, prêts à être cochés.",
@@ -35,7 +32,10 @@
     "emptyImportCta": "Tu viens de TV Time ? Importe ton historique",
     "filterPlaceholder": "Filtrer vos séries…",
     "filterNoMatch": "Rien ne correspond à ce filtre.",
-    "installBanner": "Installe Rewatch sur ton écran d'accueil"
+    "installBanner": "Installe Rewatch sur ton écran d'accueil",
+    "tabShows": "Séries",
+    "tabMovies": "Films",
+    "filterPlaceholderMovies": "Filtrer vos films…"
   },
   "calendar": {
     "title": "Calendrier",
