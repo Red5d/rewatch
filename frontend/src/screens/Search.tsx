@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useLibrary, useSearch, useTracking } from '../api/hooks'
+import { useLibrary, useSearch, useTracking, useWatchlist } from '../api/hooks'
 import { Poster } from '../components/Poster'
 import { ProgressBar, ScreenTitle, Spinner } from '../components/ui'
 
@@ -82,12 +82,24 @@ function ResultCard({
   )
 }
 
+type LibraryFilter = 'ALL' | 'WATCHING' | 'FOR_LATER' | 'ARCHIVED'
+
 export default function Search() {
   const { t } = useTranslation()
   const [q, setQ] = useState('')
+  const [filter, setFilter] = useState<LibraryFilter>('ALL')
   const search = useSearch(q)
   const library = useLibrary()
+  const { data: watchlist } = useWatchlist()
   const searching = q.trim().length > 0
+
+  const filteredLibrary = (library.data ?? []).filter((l) => filter === 'ALL' || l.state === filter)
+  const chips: [LibraryFilter, string][] = [
+    ['ALL', t('search.filterAll')],
+    ['WATCHING', t('search.filterWatching')],
+    ['FOR_LATER', t('search.filterForLater')],
+    ['ARCHIVED', t('search.filterArchived')],
+  ]
 
   return (
     <div className="flex min-h-full flex-col">
@@ -129,19 +141,58 @@ export default function Search() {
       ) : (
         <div className="flex flex-col gap-3 px-4 pt-3 pb-4 lg:max-w-4xl lg:px-8">
           {library.data && library.data.length > 0 && (
-            <div className="px-1 text-base font-extrabold">{t('search.yourShows')}</div>
+            <>
+              <div className="px-1 text-base font-extrabold">{t('search.yourShows')}</div>
+              <div className="flex gap-1.5 overflow-x-auto py-0.5">
+                {chips.map(([key, label]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setFilter(key)}
+                    className={`flex-none rounded-full border px-3.5 py-1.5 text-[12px] font-extrabold transition-colors ${
+                      filter === key ? 'border-accent bg-accent text-ink' : 'text-muted border-border bg-transparent'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </>
           )}
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-            {(library.data ?? []).map((l) => (
+            {filteredLibrary.map((l) => (
               <Link viewTransition key={l.show.tmdbId} to={`/show/${l.show.tmdbId}`} className="flex flex-col gap-1.5">
-                <Poster path={l.show.posterPath} title={l.show.name} size="w185" className="aspect-[2/3] w-full rounded-[13px] text-base" />
+                <div className="relative">
+                  <Poster path={l.show.posterPath} title={l.show.name} size="w185" className="aspect-[2/3] w-full rounded-[13px] text-base" />
+                  {l.state !== 'WATCHING' && (
+                    <span className="absolute top-1.5 left-1.5 rounded-md bg-[rgba(9,12,20,.78)] px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide uppercase text-[#c9b8ff]">
+                      {l.state === 'FOR_LATER' ? t('search.badgeForLater') : t('search.badgeArchived')}
+                    </span>
+                  )}
+                </div>
                 <ProgressBar pct={l.aired > 0 ? (l.watched / l.aired) * 100 : 0} />
                 <div className="text-muted text-[11px] font-semibold">
                   {t('search.episodesProgress', { watched: l.watched, aired: l.aired })}
                 </div>
               </Link>
             ))}
+            {filteredLibrary.length === 0 && (library.data?.length ?? 0) > 0 && (
+              <div className="text-dim col-span-full py-8 text-center text-sm">{t('search.filterEmpty')}</div>
+            )}
           </div>
+          {filter === 'FOR_LATER' && (watchlist?.movies.length ?? 0) > 0 && (
+            <>
+              <div className="px-1 pt-2 text-base font-extrabold">{t('search.watchlistMovies')}</div>
+              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+                {watchlist!.movies.map((m) => (
+                  <Link viewTransition key={m.tmdbId} to={`/movie/${m.tmdbId}`} className="flex flex-col gap-1.5">
+                    <Poster path={m.posterPath} title={m.title} size="w185" className="aspect-[2/3] w-full rounded-[13px] text-base" />
+                    <div className="truncate text-[11px] font-semibold">{m.title}</div>
+                  </Link>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

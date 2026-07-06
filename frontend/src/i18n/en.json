@@ -52,7 +52,15 @@
     "noResults": "No results",
     "follow": "+ Follow",
     "addToWatchlist": "+ Watchlist",
-    "added": "✓ Added"
+    "added": "✓ Added",
+    "filterAll": "All",
+    "filterWatching": "Watching",
+    "filterForLater": "For later",
+    "filterArchived": "Archived",
+    "filterEmpty": "No shows in this category.",
+    "badgeForLater": "later",
+    "badgeArchived": "archived",
+    "watchlistMovies": "Movies for later"
   },
   "show": {
     "watching": "Watching",

@@ -52,7 +52,15 @@
     "noResults": "Aucun résultat",
     "follow": "+ Suivre",
     "addToWatchlist": "+ À voir",
-    "added": "✓ Ajouté"
+    "added": "✓ Ajouté",
+    "filterAll": "Toutes",
+    "filterWatching": "En cours",
+    "filterForLater": "Pour plus tard",
+    "filterArchived": "Archivées",
+    "filterEmpty": "Aucune série dans cette catégorie.",
+    "badgeForLater": "+ tard",
+    "badgeArchived": "archivée",
+    "watchlistMovies": "Films pour plus tard"
   },
   "show": {
     "watching": "En cours",

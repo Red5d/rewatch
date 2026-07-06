@@ -279,10 +279,10 @@ export default function UpNext() {
                   {t('upnext.moviesCount', { count: filteredMovies.length })}
                 </div>
               </div>
-              <div className="flex gap-3 overflow-x-auto px-1 py-0.5 lg:gap-4">
+              <div className="grid grid-cols-3 gap-3 px-1 py-0.5 sm:grid-cols-4 lg:grid-cols-6 lg:gap-4">
                 {filteredMovies.map((m) => (
-                  <Link viewTransition key={m.tmdbId} to={`/movie/${m.tmdbId}`} className="flex w-[104px] flex-none flex-col gap-1.75 lg:w-32">
-                    <Poster path={m.posterPath} title={m.title} size="w185" className="h-[156px] w-[104px] rounded-[13px] text-lg lg:h-48 lg:w-32" />
+                  <Link viewTransition key={m.tmdbId} to={`/movie/${m.tmdbId}`} className="flex flex-col gap-1.75">
+                    <Poster path={m.posterPath} title={m.title} size="w185" className="aspect-[2/3] w-full rounded-[13px] text-lg" />
                     <div className="truncate text-xs font-semibold lg:text-[12.5px]">{m.title}</div>
                     <div className="text-dim -mt-1 text-[11px]">
                       {[m.releaseDate ? frDate(m.releaseDate, { year: 'numeric' }) : null, runtimeLabel(m.runtime)]
