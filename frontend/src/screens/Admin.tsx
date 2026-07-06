@@ -3,6 +3,7 @@
 // accent, 5s live polling. Extend by adding <Panel> blocks; the /api/admin/
 // metrics payload is designed to grow.
 import { useState } from 'react'
+import PullToRefresh from '../components/PullToRefresh'
 import { Link, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -203,6 +204,7 @@ export default function Admin() {
 
   return (
     <div className="ops min-h-dvh pb-16">
+      <PullToRefresh />
       {/* Top bar */}
       <header className="flex items-center justify-between border-b border-[var(--ops-line)] px-4 py-3 lg:px-6">
         <div className="flex items-baseline gap-4">
