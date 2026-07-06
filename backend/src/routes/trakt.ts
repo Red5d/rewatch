@@ -4,25 +4,62 @@ import { prisma } from '../lib/prisma.js'
 import { pollDeviceToken, saveTokens, startDeviceFlow, traktConfigured } from '../lib/trakt.js'
 import { runTraktExport, runTraktImport } from '../lib/trakt-sync.js'
 
-// One in-flight device-code poll per user (in-process, like the import jobs).
-const pendingFlows = new Map<number, { userCode: string; verificationUrl: string; expiresAt: number }>()
+// One pending device-code flow per user. Trakt is polled on demand from the
+// status endpoint (the client already polls it, and refetches on focus): the
+// moment the user comes back from trakt.tv, the next status request both
+// checks Trakt and answers "connected" in the same round-trip.
+type PendingFlow = {
+  deviceCode: string
+  userCode: string
+  verificationUrl: string
+  expiresAt: number
+  intervalMs: number
+  lastPollAt: number
+}
+const pendingFlows = new Map<number, PendingFlow>()
 
 export default async function traktRoutes(app: FastifyInstance) {
   app.get('/api/trakt/status', { preHandler: app.requireAuth }, async (request) => {
     const userId = request.user!.id
+
+    // Advance the pending device flow, respecting Trakt's poll interval.
+    const flow = pendingFlows.get(userId)
+    if (flow) {
+      if (flow.expiresAt <= Date.now()) {
+        pendingFlows.delete(userId)
+      } else if (Date.now() - flow.lastPollAt >= flow.intervalMs) {
+        flow.lastPollAt = Date.now()
+        try {
+          const result = await pollDeviceToken(flow.deviceCode)
+          if (result.status === 'ok') {
+            await saveTokens(userId, result.tokens)
+            pendingFlows.delete(userId)
+            app.log.info({ userId }, 'trakt connected')
+          } else if (result.status !== 'pending') {
+            pendingFlows.delete(userId)
+          }
+        } catch (err) {
+          app.log.warn({ err }, 'trakt device poll error')
+        }
+      }
+    }
+
     const account = await prisma.traktAccount.findUnique({ where: { userId } })
     const running = await prisma.importJob.findFirst({
       where: { userId, status: 'RUNNING', source: { in: ['TRAKT', 'TRAKT_EXPORT'] } },
       select: { id: true, source: true },
     })
-    const flow = pendingFlows.get(userId)
+    const stillPending = pendingFlows.get(userId)
     return {
       configured: traktConfigured(),
       connected: account !== null,
       username: account?.username ?? null,
       mirrorEnabled: account?.mirrorEnabled ?? false,
       runningJob: running,
-      pendingCode: flow && flow.expiresAt > Date.now() ? { userCode: flow.userCode, verificationUrl: flow.verificationUrl } : null,
+      pendingCode:
+        stillPending && stillPending.expiresAt > Date.now()
+          ? { userCode: stillPending.userCode, verificationUrl: stillPending.verificationUrl }
+          : null,
     }
   })
 
@@ -40,31 +77,13 @@ export default async function traktRoutes(app: FastifyInstance) {
 
     const code = await startDeviceFlow()
     pendingFlows.set(userId, {
+      deviceCode: code.device_code,
       userCode: code.user_code,
       verificationUrl: code.verification_url,
       expiresAt: Date.now() + code.expires_in * 1000,
+      intervalMs: code.interval * 1000,
+      lastPollAt: 0,
     })
-
-    const poll = async () => {
-      const deadline = Date.now() + code.expires_in * 1000
-      while (Date.now() < deadline) {
-        await new Promise((r) => setTimeout(r, code.interval * 1000))
-        try {
-          const result = await pollDeviceToken(code.device_code)
-          if (result.status === 'ok') {
-            await saveTokens(userId, result.tokens)
-            app.log.info({ userId }, 'trakt connected')
-            break
-          }
-          if (result.status !== 'pending') break
-        } catch (err) {
-          app.log.warn({ err }, 'trakt device poll error')
-          break
-        }
-      }
-      pendingFlows.delete(userId)
-    }
-    void poll()
 
     return { userCode: code.user_code, verificationUrl: code.verification_url }
   })

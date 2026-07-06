@@ -19,7 +19,10 @@ const useTraktStatus = (poll: boolean) =>
   useQuery({
     queryKey: ['trakt-status'],
     queryFn: () => api.get<TraktStatus>('/api/trakt/status'),
-    refetchInterval: poll ? 3000 : false,
+    refetchInterval: poll ? 2500 : false,
+    // Coming back from trakt.tv must feel instant: the status request itself
+    // advances the device flow server-side.
+    refetchOnWindowFocus: 'always',
   })
 
 function JobCard({ jobId, source }: { jobId: number; source: 'TRAKT' | 'TRAKT_EXPORT' }) {
