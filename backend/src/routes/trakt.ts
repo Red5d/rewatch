@@ -94,7 +94,7 @@ export default async function traktRoutes(app: FastifyInstance) {
   app.post('/api/trakt/pull', { preHandler: app.requireAuth }, async (request) => {
     const userId = request.user!.id
     const last = lastPullRequest.get(userId) ?? 0
-    if (Date.now() - last < 60_000) return { skipped: 'throttled' }
+    if (Date.now() - last < 15_000) return { skipped: 'throttled' }
     lastPullRequest.set(userId, Date.now())
     try {
       return await runTraktPull(userId)

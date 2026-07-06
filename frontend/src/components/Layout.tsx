@@ -42,7 +42,10 @@ function useTraktPullOnOpen() {
   useEffect(() => {
     let lastRun = 0
     const pull = async () => {
-      if (Date.now() - lastRun < 60_000) return
+      // Coming back to the app is exactly when a pull is most useful (the
+      // user may just have checked something on Trakt): only guard against
+      // rapid tab-switch spam.
+      if (Date.now() - lastRun < 10_000) return
       lastRun = Date.now()
       try {
         const result = await api.post<{ episodes?: number; movies?: number; skipped?: string }>('/api/trakt/pull')
