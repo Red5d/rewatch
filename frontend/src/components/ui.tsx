@@ -36,26 +36,69 @@ export function ProgressBar({ pct, className = 'h-1' }: { pct: number; className
   )
 }
 
+/** One star, optionally half-filled (Letterboxd style). */
+function Star({ fill, className = '' }: { fill: 0 | 0.5 | 1; className?: string }) {
+  return (
+    <span className={`relative inline-block ${className}`}>
+      <span className="text-star-off">★</span>
+      {fill > 0 && (
+        <span
+          className="text-accent absolute inset-y-0 left-0 overflow-hidden"
+          style={{ width: fill === 1 ? '100%' : '50%' }}
+        >
+          ★
+        </span>
+      )}
+    </span>
+  )
+}
+
+const starFill = (value: number, i: number): 0 | 0.5 | 1 =>
+  value >= i * 2 ? 1 : value === i * 2 - 1 ? 0.5 : 0
+
+/** Read-only star row for grids/cards. `value` is 1-10 (halves supported). */
+export function StarRow({ value, className = 'text-[11px]' }: { value: number; className?: string }) {
+  return (
+    <span className={`inline-flex gap-px leading-none ${className}`}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <Star key={i} fill={starFill(value, i)} />
+      ))}
+    </span>
+  )
+}
+
 export function Stars({
   value,
   onChange,
 }: {
-  value: number | null // 1-10 on the API side → 5 displayed stars
+  value: number | null // 1-10 on the API side → 5 stars with halves
   onChange?: (v: number | null) => void
 }) {
   const { t } = useTranslation()
-  const stars = value ? Math.round(value / 2) : 0
+  const v = value ?? 0
   return (
-    <div className="flex items-center gap-0.75 text-base tracking-[2px]">
+    <div className="flex items-center gap-0.75 text-base">
       {[1, 2, 3, 4, 5].map((i) => (
-        <button
-          key={i}
-          type="button"
-          onClick={onChange ? () => onChange(i === stars ? null : i * 2) : undefined}
-          className={i <= stars ? 'text-accent' : 'text-star-off'}
-        >
-          ★
-        </button>
+        <span key={i} className="relative">
+          <Star fill={starFill(v, i)} />
+          {onChange && (
+            <>
+              {/* Left half → x.5, right half → x. Tapping the current value clears. */}
+              <button
+                type="button"
+                aria-label={`${i - 0.5}★`}
+                onClick={() => onChange(v === i * 2 - 1 ? null : i * 2 - 1)}
+                className="absolute inset-y-0 left-0 w-1/2"
+              />
+              <button
+                type="button"
+                aria-label={`${i}★`}
+                onClick={() => onChange(v === i * 2 ? null : i * 2)}
+                className="absolute inset-y-0 right-0 w-1/2"
+              />
+            </>
+          )}
+        </span>
       ))}
       <span className="text-muted ml-1.5 self-center text-xs font-bold tracking-normal">{t('common.myRating')}</span>
     </div>
