@@ -24,6 +24,16 @@ export default async function importRoutes(app: FastifyInstance) {
     return reply.code(202).send({ jobId: job.id })
   })
 
+  // The import screen re-adopts an in-flight (or freshly failed) job after
+  // a navigation away: component state alone would lose it.
+  app.get('/api/import/jobs/latest', { preHandler: app.requireAuth }, async (request) => {
+    const job = await prisma.importJob.findFirst({
+      where: { userId: request.user!.id, source: 'TVTIME' },
+      orderBy: { id: 'desc' },
+    })
+    return { job }
+  })
+
   app.get('/api/import/jobs/:id', { preHandler: app.requireAuth }, async (request, reply) => {
     const params = idParam.safeParse(request.params)
     if (!params.success) return reply.code(400).send({ error: 'invalid_id' })

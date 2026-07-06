@@ -163,11 +163,6 @@
     "exportTitle": "Export my data",
     "exportHint": "Full history as JSON — your data belongs to you",
     "tmdbAttribution": "This product uses the TMDB API but is not endorsed or certified by TMDB.",
-    "importHelpLink": "How do I get my TV Time export? ›",
-    "openSource": "Rewatch is open source",
-    "openSourceHint": "Source code and releases on GitHub",
-    "openIssue": "Found a bug? Have an idea?",
-    "openIssueHint": "Open an issue on GitHub",
     "deleteAccountTitle": "Delete my account",
     "deleteAccountHint": "Account, history, everything — erased for good",
     "deleteModalTitle": "Delete your account?",
@@ -178,7 +173,10 @@
     "installRow": "Install as an app",
     "installRowHint": "Home screen icon + push notifications",
     "traktRow": "Trakt sync",
-    "traktRowHint": "Import, export or mirror your history with Trakt.tv"
+    "traktRowHint": "Import, export or mirror your history with Trakt.tv",
+    "dataSection": "My data",
+    "importRowHint": "Bring your full TV Time history back",
+    "footerIssue": "Report a bug / idea"
   },
   "resolve": {
     "title": "To resolve",
@@ -357,8 +355,8 @@
     "step4Title": "Download the file",
     "step4Text": "When it is ready, press “Download”. You get a file named gdpr-data.zip — keep it as is, no need to unzip it.",
     "step5Title": "Import it into Rewatch",
-    "step5Text": "Drop the zip in the import section of your profile. Episodes, shows, movies, ratings and watchlist come back in a few minutes.",
-    "cta": "I have my file — import it"
+    "howTitle": "Don't have your export file yet? Here's how:",
+    "step5TextInline": "Drop the zip in the box at the top of this page. Episodes, shows, movies, ratings and watchlist come back in a few minutes."
   },
   "legal": {
     "title": "Privacy & legal notice",

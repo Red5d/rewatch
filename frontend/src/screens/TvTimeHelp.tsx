@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import ImportCard from '../components/ImportCard'
 import { useTranslation } from 'react-i18next'
 
 const GDPR_URL = 'https://gdpr.tvtime.com/gdpr/self-service'
@@ -50,6 +51,10 @@ export default function TvTimeHelp() {
           <div className="text-muted mt-1 text-[12.5px] leading-normal">{t('tvhelp.deadlineText')}</div>
         </div>
 
+        <ImportCard />
+
+        <div className="text-muted px-1 pt-2 text-[13px] font-extrabold">{t('tvhelp.howTitle')}</div>
+
         <Step
           n={1}
           title={t('tvhelp.step1Title')}
@@ -77,15 +82,7 @@ export default function TvTimeHelp() {
         />
         <Step n={3} title={t('tvhelp.step3Title')} text={t('tvhelp.step3Text')} image="/help/tvtime-2-generate.png" />
         <Step n={4} title={t('tvhelp.step4Title')} text={t('tvhelp.step4Text')} image="/help/tvtime-4-download.png" />
-        <Step n={5} title={t('tvhelp.step5Title')} text={t('tvhelp.step5Text')} />
-
-        <button
-          type="button"
-          onClick={() => navigate('/profile')}
-          className="bg-accent text-ink mt-2 rounded-2xl px-7 py-3.5 text-[15px] font-extrabold shadow-[0_8px_24px_rgba(255,201,75,.25)]"
-        >
-          {t('tvhelp.cta')}
-        </button>
+        <Step n={5} title={t('tvhelp.step5Title')} text={t('tvhelp.step5TextInline')} />
       </div>
     </div>
   )

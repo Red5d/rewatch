@@ -108,6 +108,7 @@ export type ImportJob = {
   report: ImportReport | null
   error: string | null
   createdAt: string
+  updatedAt: string
 }
 
 export type PendingMovie = {
