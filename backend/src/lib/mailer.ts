@@ -35,13 +35,13 @@ const T = {
   verify: {
     fr: (username: string, link: string) => ({
       subject: 'Rewatch — vérifiez votre adresse email',
-      text: `Salut ${username},
+      text: `Bonjour ${username},
 
-Bienvenue sur Rewatch ! Clique sur ce lien pour vérifier ton adresse email :
+Bienvenue sur Rewatch ! Cliquez sur ce lien pour vérifier votre adresse email :
 
 ${link}
 
-Le lien est valable 7 jours. Si tu n'es pas à l'origine de cette inscription, ignore ce message.`,
+Le lien est valable 7 jours. Si vous n'êtes pas à l'origine de cette inscription, ignorez ce message.`,
     }),
     en: (username: string, link: string) => ({
       subject: 'Rewatch — verify your email address',
@@ -57,11 +57,11 @@ The link is valid for 7 days. If you didn't sign up, just ignore this message.`,
   verifyReminder: {
     fr: (username: string, link: string) => ({
       subject: 'Rewatch — dernière chance de vérifier votre email',
-      text: `Salut ${username},
+      text: `Bonjour ${username},
 
-Petit rappel : ton adresse email n'est toujours pas vérifiée, et ton compte Rewatch sera bloqué demain si tu ne le fais pas (il sera débloqué dès la vérification, rien n'est perdu).
+Petit rappel : votre adresse email n'est toujours pas vérifiée, et votre compte Rewatch sera bloqué demain (il sera débloqué dès la vérification, rien n'est perdu).
 
-Clique ici pour vérifier :
+Cliquez ici pour vérifier :
 
 ${link}`,
     }),
@@ -79,13 +79,13 @@ ${link}`,
   reset: {
     fr: (username: string, link: string) => ({
       subject: 'Rewatch — réinitialisation du mot de passe',
-      text: `Salut ${username},
+      text: `Bonjour ${username},
 
-Quelqu'un (toi, normalement) a demandé à réinitialiser ton mot de passe Rewatch. Clique ici :
+Quelqu'un (vous, normalement) a demandé à réinitialiser votre mot de passe Rewatch. Cliquez ici :
 
 ${link}
 
-Le lien est valable 1 heure et ne peut servir qu'une fois. Si tu n'as rien demandé, ignore ce message — ton mot de passe reste inchangé.`,
+Le lien est valable 1 heure et ne peut servir qu'une fois. Si vous n'avez rien demandé, ignorez ce message — votre mot de passe reste inchangé.`,
     }),
     en: (username: string, link: string) => ({
       subject: 'Rewatch — password reset',
