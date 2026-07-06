@@ -74,7 +74,8 @@
     "season": "Saison {{n}}",
     "markSeasonWatched": "Marquer la saison vue",
     "episodeFallback": "Épisode {{n}}",
-    "upcoming": "À venir"
+    "upcoming": "À venir",
+    "markSeasonUnwatched": "Marquer la saison comme non vue"
   },
   "movie": {
     "kind": "Film",

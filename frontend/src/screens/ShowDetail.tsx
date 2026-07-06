@@ -96,15 +96,25 @@ function SeasonBlock({
               </div>
             )
           })}
-          {aired.length > 0 && (
-            <button
-              type="button"
-              onClick={() => tracking.mutate({ method: 'post', path: `/api/shows/${showId}/watch-bulk`, body: { season } })}
-              className="text-muted w-full border-t border-line px-4 py-3 text-center text-xs font-bold"
-            >
-              {t('show.markSeasonWatched')}
-            </button>
-          )}
+          {aired.length > 0 &&
+            (() => {
+              const allSeen = aired.every((e) => watched.has(e.id))
+              return (
+                <button
+                  type="button"
+                  onClick={() =>
+                    tracking.mutate({
+                      method: 'post',
+                      path: `/api/shows/${showId}/${allSeen ? 'unwatch-bulk' : 'watch-bulk'}`,
+                      body: { season },
+                    })
+                  }
+                  className="text-muted w-full border-t border-line px-4 py-3 text-center text-xs font-bold"
+                >
+                  {allSeen ? t('show.markSeasonUnwatched') : t('show.markSeasonWatched')}
+                </button>
+              )
+            })()}
         </div>
       )}
     </div>

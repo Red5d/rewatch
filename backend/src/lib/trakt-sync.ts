@@ -307,18 +307,19 @@ export function mirrorBulkToTrakt(
   userId: number,
   showTmdbId: number,
   episodes: { season: number; number: number }[],
-  watchedAt: Date,
+  action: 'add' | 'remove',
+  watchedAt?: Date,
 ): void {
   void (async () => {
     const account = await prisma.traktAccount.findUnique({ where: { userId } })
     if (!account?.mirrorEnabled || episodes.length === 0) return
-    const bySeason = new Map<number, { number: number; watched_at: string }[]>()
+    const bySeason = new Map<number, { number: number; watched_at?: string }[]>()
     for (const e of episodes) {
       const list = bySeason.get(e.season) ?? []
-      list.push({ number: e.number, watched_at: watchedAt.toISOString() })
+      list.push({ number: e.number, ...(watchedAt ? { watched_at: watchedAt.toISOString() } : {}) })
       bySeason.set(e.season, list)
     }
-    await apiPost(userId, '/sync/history', {
+    await apiPost(userId, action === 'add' ? '/sync/history' : '/sync/history/remove', {
       shows: [{ ids: { tmdb: showTmdbId }, seasons: [...bySeason.entries()].map(([number, eps]) => ({ number, episodes: eps })) }],
     })
   })().catch((err) => {

@@ -153,9 +153,26 @@ export default async function trackingRoutes(app: FastifyInstance) {
     })
     if (created.count > 0) {
       await ensureFollowed(request.user!.id, params.data.id)
-      mirrorBulkToTrakt(request.user!.id, params.data.id, fresh, now)
+      mirrorBulkToTrakt(request.user!.id, params.data.id, fresh, 'add', now)
     }
     return { marked: created.count }
+  })
+
+  // Reverse of watch-bulk: unmark a whole season.
+  app.post('/api/shows/:id/unwatch-bulk', { preHandler: app.requireAuth }, async (request, reply) => {
+    const params = idParam.safeParse(request.params)
+    const body = z.object({ season: z.number().int().min(0) }).safeParse(request.body)
+    if (!params.success || !body.success) return reply.code(400).send({ error: 'invalid_input' })
+
+    const episodes = await prisma.episode.findMany({
+      where: { showTmdbId: params.data.id, season: body.data.season },
+      select: { id: true, season: true, number: true },
+    })
+    const deleted = await prisma.watchEvent.deleteMany({
+      where: { userId: request.user!.id, episodeId: { in: episodes.map((e) => e.id) } },
+    })
+    if (deleted.count > 0) mirrorBulkToTrakt(request.user!.id, params.data.id, episodes, 'remove')
+    return { unmarked: deleted.count }
   })
 
   // ——— Movies: watched / rewatch / unwatched / watchlist ———
