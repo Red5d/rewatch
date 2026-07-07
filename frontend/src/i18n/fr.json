@@ -84,7 +84,8 @@
     "cast": "Acteurs",
     "castMore": "Voir tout ({{count}})",
     "castLess": "Réduire",
-    "synopsis": "Synopsis"
+    "synopsis": "Synopsis",
+    "addForLater": "+ Pour plus tard"
   },
   "movie": {
     "watchedOn": "✓ Vu le {{date}}",
@@ -93,7 +94,8 @@
     "synopsis": "Synopsis",
     "forLater": "Pour plus tard",
     "archived": "Archivé",
-    "removeFromList": "Retirer de ma liste"
+    "removeFromList": "Retirer de ma liste",
+    "addForLater": "+ Pour plus tard"
   },
   "stats": {
     "title": "Stats",

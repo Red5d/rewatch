@@ -84,7 +84,8 @@
     "cast": "Cast",
     "castMore": "Show all ({{count}})",
     "castLess": "Show less",
-    "synopsis": "Synopsis"
+    "synopsis": "Synopsis",
+    "addForLater": "+ For later"
   },
   "movie": {
     "watchedOn": "✓ Watched on {{date}}",
@@ -93,7 +94,8 @@
     "synopsis": "Synopsis",
     "forLater": "For later",
     "archived": "Archived",
-    "removeFromList": "Remove from my list"
+    "removeFromList": "Remove from my list",
+    "addForLater": "+ For later"
   },
   "stats": {
     "title": "Stats",

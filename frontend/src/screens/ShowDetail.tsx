@@ -226,9 +226,9 @@ export default function ShowDetail() {
               onClick={() =>
                 tracking.mutate({ method: 'put', path: `/api/shows/${showId}/follow`, body: { state: 'FOR_LATER' } })
               }
-              className="border-border text-muted flex-none rounded-xl border-[1.5px] px-3.5 py-2.75 text-[13px] font-bold"
+              className="border-border text-text flex-none rounded-xl border-[1.5px] px-3.5 py-2.75 text-[13px] font-bold"
             >
-              {t('show.forLater')}
+              {t('show.addForLater')}
             </button>
           </>
         ) : (
