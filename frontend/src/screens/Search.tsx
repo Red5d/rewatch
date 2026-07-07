@@ -84,6 +84,22 @@ function ResultCard({
 
 type LibraryFilter = 'ALL' | 'WATCHING' | 'FOR_LATER' | 'ARCHIVED' | 'FAVORITES'
 
+function MovieGrid({ title, movies }: { title: string; movies: { tmdbId: number; title: string; posterPath: string | null }[] }) {
+  return (
+    <>
+      <div className="px-1 pt-2 text-base font-extrabold">{title}</div>
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
+        {movies.map((m) => (
+          <Link viewTransition key={m.tmdbId} to={`/movie/${m.tmdbId}`} className="flex flex-col gap-1.5">
+            <Poster path={m.posterPath} title={m.title} size="w185" className="aspect-[2/3] w-full rounded-[13px] text-base" />
+            <div className="truncate text-[11px] font-semibold">{m.title}</div>
+          </Link>
+        ))}
+      </div>
+    </>
+  )
+}
+
 export default function Search() {
   const { t } = useTranslation()
   const [q, setQ] = useState('')
@@ -98,6 +114,18 @@ export default function Search() {
   const filteredLibrary = (library.data ?? []).filter((l) =>
     filter === 'ALL' ? true : filter === 'FAVORITES' ? l.isFavorite : l.state === filter,
   )
+  const forLaterMovies = watchlist?.movies ?? []
+  const archivedMovies = watchlist?.archivedMovies ?? []
+  const showForLaterMovies = (filter === 'ALL' || filter === 'FOR_LATER') && forLaterMovies.length > 0
+  const showArchivedMovies = (filter === 'ALL' || filter === 'ARCHIVED') && archivedMovies.length > 0
+  const showFavoriteMovies = filter === 'FAVORITES' && favoriteMovies.length > 0
+  // The library block exists as soon as there is anything in it — a movies-only
+  // account must see it too, not just people following shows.
+  const hasLibrary =
+    (library.data?.length ?? 0) > 0 ||
+    forLaterMovies.length > 0 ||
+    archivedMovies.length > 0 ||
+    favoriteMovies.length > 0
   const chips: [LibraryFilter, string][] = [
     ['ALL', t('search.filterAll')],
     ['WATCHING', t('search.filterWatching')],
@@ -145,9 +173,9 @@ export default function Search() {
         )
       ) : (
         <div className="flex flex-col gap-3 px-4 pt-3 pb-4 lg:max-w-4xl lg:px-8">
-          {library.data && library.data.length > 0 && (
+          {hasLibrary && (
             <>
-              <div className="px-1 text-base font-extrabold">{t('search.yourShows')}</div>
+              <div className="px-1 text-base font-extrabold">{t('search.yourLibrary')}</div>
               <div className="flex gap-1.5 overflow-x-auto py-0.5">
                 {chips.map(([key, label]) => (
                   <button
@@ -181,49 +209,17 @@ export default function Search() {
                 </div>
               </Link>
             ))}
-            {filteredLibrary.length === 0 && (library.data?.length ?? 0) > 0 && (
-              <div className="text-dim col-span-full py-8 text-center text-sm">{t('search.filterEmpty')}</div>
-            )}
+            {filteredLibrary.length === 0 &&
+              hasLibrary &&
+              !showForLaterMovies &&
+              !showArchivedMovies &&
+              !showFavoriteMovies && (
+                <div className="text-dim col-span-full py-8 text-center text-sm">{t('search.filterEmpty')}</div>
+              )}
           </div>
-          {filter === 'FAVORITES' && favoriteMovies.length > 0 && (
-            <>
-              <div className="px-1 pt-2 text-base font-extrabold">{t('search.favoriteMovies')}</div>
-              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-                {favoriteMovies.map((m) => (
-                  <Link viewTransition key={m.tmdbId} to={`/movie/${m.tmdbId}`} className="flex flex-col gap-1.5">
-                    <Poster path={m.posterPath} title={m.title} size="w185" className="aspect-[2/3] w-full rounded-[13px] text-base" />
-                    <div className="truncate text-[11px] font-semibold">{m.title}</div>
-                  </Link>
-                ))}
-              </div>
-            </>
-          )}
-          {filter === 'FOR_LATER' && (watchlist?.movies.length ?? 0) > 0 && (
-            <>
-              <div className="px-1 pt-2 text-base font-extrabold">{t('search.watchlistMovies')}</div>
-              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-                {watchlist!.movies.map((m) => (
-                  <Link viewTransition key={m.tmdbId} to={`/movie/${m.tmdbId}`} className="flex flex-col gap-1.5">
-                    <Poster path={m.posterPath} title={m.title} size="w185" className="aspect-[2/3] w-full rounded-[13px] text-base" />
-                    <div className="truncate text-[11px] font-semibold">{m.title}</div>
-                  </Link>
-                ))}
-              </div>
-            </>
-          )}
-          {filter === 'ARCHIVED' && (watchlist?.archivedMovies.length ?? 0) > 0 && (
-            <>
-              <div className="px-1 pt-2 text-base font-extrabold">{t('search.archivedMovies')}</div>
-              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-                {watchlist!.archivedMovies.map((m) => (
-                  <Link viewTransition key={m.tmdbId} to={`/movie/${m.tmdbId}`} className="flex flex-col gap-1.5">
-                    <Poster path={m.posterPath} title={m.title} size="w185" className="aspect-[2/3] w-full rounded-[13px] text-base" />
-                    <div className="truncate text-[11px] font-semibold">{m.title}</div>
-                  </Link>
-                ))}
-              </div>
-            </>
-          )}
+          {showFavoriteMovies && <MovieGrid title={t('search.favoriteMovies')} movies={favoriteMovies} />}
+          {showForLaterMovies && <MovieGrid title={t('search.watchlistMovies')} movies={forLaterMovies} />}
+          {showArchivedMovies && <MovieGrid title={t('search.archivedMovies')} movies={archivedMovies} />}
         </div>
       )}
     </div>

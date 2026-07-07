@@ -47,7 +47,7 @@
   "search": {
     "title": "Recherche",
     "placeholder": "Séries, films…",
-    "yourShows": "Vos séries",
+    "yourLibrary": "Votre bibliothèque",
     "episodesProgress": "{{watched}}/{{aired}} ép.",
     "noResults": "Aucun résultat",
     "follow": "+ Suivre",
@@ -57,7 +57,7 @@
     "filterWatching": "En cours",
     "filterForLater": "Pour plus tard",
     "filterArchived": "Archivées",
-    "filterEmpty": "Aucune série dans cette catégorie.",
+    "filterEmpty": "Rien dans cette catégorie.",
     "badgeForLater": "+ tard",
     "badgeArchived": "archivée",
     "watchlistMovies": "Films pour plus tard",

@@ -47,7 +47,7 @@
   "search": {
     "title": "Search",
     "placeholder": "Shows, movies…",
-    "yourShows": "Your shows",
+    "yourLibrary": "Your library",
     "episodesProgress": "{{watched}}/{{aired}} ep.",
     "noResults": "No results",
     "follow": "+ Follow",
@@ -57,7 +57,7 @@
     "filterWatching": "Watching",
     "filterForLater": "For later",
     "filterArchived": "Archived",
-    "filterEmpty": "No shows in this category.",
+    "filterEmpty": "Nothing in this category.",
     "badgeForLater": "later",
     "badgeArchived": "archived",
     "watchlistMovies": "Movies for later",
