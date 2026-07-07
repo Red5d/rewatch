@@ -147,7 +147,7 @@ export default function ShowDetail() {
   const backdrop = tmdbImage(show.backdropPath, 'w780')
 
   return (
-    <div className="mx-auto flex min-h-full max-w-2xl flex-col pb-6">
+    <div className="mx-auto flex min-h-full max-w-2xl flex-col pb-8">
       {/* Immersive header */}
       <div className="relative h-[210px] overflow-hidden" style={{ background: posterColor(show.name) }}>
         {backdrop ? (
@@ -219,7 +219,7 @@ export default function ShowDetail() {
                   ? tracking.mutate({ method: 'delete', path: `/api/shows/${showId}/follow` })
                   : tracking.mutate({ method: 'put', path: `/api/shows/${showId}/follow`, body: { state: s.key } })
               }
-              className={`flex-none rounded-[11px] px-3.5 py-2.25 text-[12.5px] ${
+              className={`flex-none rounded-xl px-3.5 py-2.75 text-[13px] ${
                 active ? 'bg-accent text-ink font-extrabold' : 'border-border text-muted border-[1.5px] font-bold'
               }`}
             >
@@ -251,7 +251,8 @@ export default function ShowDetail() {
 
       {show.overview && (
         <div className="px-5 pt-4.5">
-          <div className="text-soft text-[13px] leading-relaxed">{show.overview}</div>
+          <div className="mb-2 text-[14.5px] font-extrabold">{t('show.synopsis')}</div>
+          <div className="text-soft text-[13.5px] leading-relaxed">{show.overview}</div>
         </div>
       )}
 

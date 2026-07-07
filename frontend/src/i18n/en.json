@@ -78,15 +78,15 @@
     "markSeasonUnwatched": "Mark season as unwatched",
     "cast": "Cast",
     "castMore": "Show all ({{count}})",
-    "castLess": "Show less"
+    "castLess": "Show less",
+    "synopsis": "Synopsis"
   },
   "movie": {
-    "kind": "Movie",
     "watchedOn": "✓ Watched on {{date}}",
     "markWatched": "✓ Mark as watched",
     "rewatched": "↻ Rewatched",
-    "inWatchlist": "✓ In my list",
-    "addToWatchlist": "+ Watchlist",
+    "inWatchlist": "✓ For later",
+    "addToWatchlist": "For later",
     "synopsis": "Synopsis"
   },
   "stats": {

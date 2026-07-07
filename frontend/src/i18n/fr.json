@@ -78,15 +78,15 @@
     "markSeasonUnwatched": "Marquer la saison comme non vue",
     "cast": "Acteurs",
     "castMore": "Voir tout ({{count}})",
-    "castLess": "Réduire"
+    "castLess": "Réduire",
+    "synopsis": "Synopsis"
   },
   "movie": {
-    "kind": "Film",
     "watchedOn": "✓ Vu le {{date}}",
     "markWatched": "✓ Marquer vu",
     "rewatched": "↻ Revu",
-    "inWatchlist": "✓ Dans ma liste",
-    "addToWatchlist": "+ À voir",
+    "inWatchlist": "✓ Pour plus tard",
+    "addToWatchlist": "Pour plus tard",
     "synopsis": "Synopsis"
   },
   "stats": {

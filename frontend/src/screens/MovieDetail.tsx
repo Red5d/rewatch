@@ -32,7 +32,7 @@ export default function MovieDetail() {
             {initial(movie.title)}
           </div>
         )}
-        <div className="from-surface/15 via-surface/90 to-surface absolute inset-0 bg-gradient-to-b" />
+        <div className="from-surface/15 via-surface/90 to-surface absolute inset-0 bg-gradient-to-b" style={{ ['--tw-gradient-via-position' as string]: '88%' }} />
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -68,8 +68,8 @@ export default function MovieDetail() {
           <div className="text-muted text-[12.5px] font-semibold">
             {[
               movie.releaseDate ? frDate(movie.releaseDate, { year: 'numeric' }) : null,
+              movie.genres.slice(0, 2).join(', '),
               runtimeLabel(movie.runtime),
-              t('movie.kind'),
             ]
               .filter(Boolean)
               .join(' · ')}
@@ -94,7 +94,7 @@ export default function MovieDetail() {
             <button
               type="button"
               onClick={() => tracking.mutate({ method: 'delete', path: `/api/movies/${movieId}/watch` })}
-              className="bg-accent text-ink flex flex-1 items-center justify-center gap-1.75 rounded-xl px-1 py-3 text-[13px] font-extrabold"
+              className="bg-accent text-ink flex flex-1 items-center justify-center gap-1.75 rounded-xl px-1 py-2.75 text-[13px] font-extrabold"
             >
               {firstWatch ? t('movie.watchedOn', { date: frDate(firstWatch) }) : '✓'}
             </button>
@@ -104,7 +104,7 @@ export default function MovieDetail() {
                 buzz()
                 tracking.mutate({ method: 'post', path: `/api/movies/${movieId}/watch` })
               }}
-              className="border-border text-text flex flex-none items-center gap-1.75 rounded-xl border-[1.5px] px-3.5 py-3 text-[13px] font-extrabold"
+              className="border-border text-text flex flex-none items-center gap-1.75 rounded-xl border-[1.5px] px-3.5 py-2.75 text-[13px] font-bold"
             >
               {t('movie.rewatched')}
               {watchCount > 1 && (
@@ -120,7 +120,7 @@ export default function MovieDetail() {
                 buzz()
                 tracking.mutate({ method: 'post', path: `/api/movies/${movieId}/watch` })
               }}
-              className="bg-accent text-ink flex-1 rounded-xl px-1 py-3 text-[13px] font-extrabold"
+              className="bg-accent text-ink flex-1 rounded-xl px-1 py-2.75 text-[13px] font-extrabold"
             >
               {t('movie.markWatched')}
             </button>
@@ -132,8 +132,8 @@ export default function MovieDetail() {
                   path: `/api/movies/${movieId}/watchlist`,
                 })
               }
-              className={`flex-none rounded-xl border-[1.5px] px-3.5 py-3 text-[13px] font-extrabold ${
-                user?.inWatchlist ? 'border-accent text-accent' : 'border-border text-text'
+              className={`flex-none rounded-xl border-[1.5px] px-3.5 py-2.75 text-[13px] font-bold ${
+                user?.inWatchlist ? 'border-accent text-accent' : 'border-border text-muted'
               }`}
             >
               {user?.inWatchlist ? t('movie.inWatchlist') : t('movie.addToWatchlist')}
@@ -141,16 +141,6 @@ export default function MovieDetail() {
           </>
         )}
       </div>
-
-      {movie.genres.length > 0 && (
-        <div className="flex flex-wrap gap-2 px-5 pt-3">
-          {movie.genres.map((g) => (
-            <div key={g} className="border-border text-muted rounded-[10px] border-[1.5px] px-3 py-1.75 text-xs font-bold">
-              {g}
-            </div>
-          ))}
-        </div>
-      )}
 
       <CastSection kind="movies" tmdbId={movieId} />
 
