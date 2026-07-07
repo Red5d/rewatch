@@ -71,7 +71,7 @@
     "forLater": "For later",
     "follow": "+ Follow",
     "unfollow": "Unfollow",
-    "markNextWatched": "✓ Mark S{{s}}E{{e}} watched",
+    "markNextWatched": "Mark S{{s}}E{{e}} watched",
     "upToDate": "✓ Up to date",
     "progress": "Progress",
     "episodesOf": "/{{total}} episodes",
@@ -88,7 +88,7 @@
   },
   "movie": {
     "watchedOn": "✓ Watched on {{date}}",
-    "markWatched": "✓ Mark as watched",
+    "markWatched": "Mark as watched",
     "rewatched": "↻ Rewatched",
     "synopsis": "Synopsis",
     "forLater": "For later",
