@@ -130,6 +130,7 @@ export default function ShowDetail() {
   const { data: show, isLoading } = useShow(showId)
   const { data: user } = useShowUser(showId)
   const tracking = useTracking()
+  const [stateMenuOpen, setStateMenuOpen] = useState(false)
 
   const watched = useMemo(() => new Set(user?.watchedEpisodeIds ?? []), [user])
   const seasons = useMemo(() => {
@@ -142,6 +143,7 @@ export default function ShowDetail() {
 
   const airedEps = show.episodes.filter((e) => e.season > 0 && e.airDate && new Date(e.airDate) <= new Date())
   const seenCount = airedEps.filter((e) => watched.has(e.id)).length
+  const nextEp = [...airedEps].sort((a, b) => a.season - b.season || a.number - b.number).find((e) => !watched.has(e.id)) ?? null
   const followState = user?.follow?.state ?? null
   const isFavorite = user?.isFavorite ?? false
   const backdrop = tmdbImage(show.backdropPath, 'w780')
@@ -206,28 +208,95 @@ export default function ShowDetail() {
         </div>
       </div>
 
-      {/* Follow states */}
-      <div className="flex gap-2 overflow-x-auto px-5 pt-4">
-        {STATES.map((s) => {
-          const active = followState === s.key
-          return (
+      {/* Actions — same composition as the movie page: primary CTA + state button */}
+      <div className="flex gap-2 px-5 pt-4">
+        {followState === null ? (
+          <>
             <button
-              key={s.key}
               type="button"
               onClick={() =>
-                active
-                  ? tracking.mutate({ method: 'delete', path: `/api/shows/${showId}/follow` })
-                  : tracking.mutate({ method: 'put', path: `/api/shows/${showId}/follow`, body: { state: s.key } })
+                tracking.mutate({ method: 'put', path: `/api/shows/${showId}/follow`, body: { state: 'WATCHING' } })
               }
-              className={`flex-none rounded-xl px-3.5 py-2.75 text-[13px] ${
-                active ? 'bg-accent text-ink font-extrabold' : 'border-border text-muted border-[1.5px] font-bold'
-              }`}
+              className="bg-accent text-ink flex-1 rounded-xl px-1 py-2.75 text-[13px] font-extrabold"
             >
-              {t(s.labelKey)}
-              {active ? ' ▾' : ''}
+              {t('show.follow')}
             </button>
-          )
-        })}
+            <button
+              type="button"
+              onClick={() =>
+                tracking.mutate({ method: 'put', path: `/api/shows/${showId}/follow`, body: { state: 'FOR_LATER' } })
+              }
+              className="border-border text-muted flex-none rounded-xl border-[1.5px] px-3.5 py-2.75 text-[13px] font-bold"
+            >
+              {t('show.forLater')}
+            </button>
+          </>
+        ) : (
+          <>
+            {nextEp ? (
+              <button
+                type="button"
+                onClick={() => {
+                  buzz()
+                  tracking.mutate({ method: 'post', path: `/api/episodes/${nextEp.id}/watch` })
+                }}
+                className="bg-accent text-ink flex-1 rounded-xl px-1 py-2.75 text-[13px] font-extrabold"
+              >
+                {t('show.markNextWatched', { s: nextEp.season, e: String(nextEp.number).padStart(2, '0') })}
+              </button>
+            ) : (
+              <div className="bg-track text-green flex flex-1 items-center justify-center rounded-xl px-1 py-2.75 text-[13px] font-extrabold">
+                {t('show.upToDate')}
+              </div>
+            )}
+            <div className="relative flex-none">
+              <button
+                type="button"
+                onClick={() => setStateMenuOpen(!stateMenuOpen)}
+                className="border-accent text-accent rounded-xl border-[1.5px] px-3.5 py-2.75 text-[13px] font-bold"
+              >
+                {t(STATES.find((s) => s.key === followState)?.labelKey ?? 'show.watching')} ▾
+              </button>
+              {stateMenuOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setStateMenuOpen(false)} />
+                  <div className="bg-card absolute top-full right-0 z-20 mt-2 w-48 overflow-hidden rounded-xl border border-line shadow-[0_10px_30px_rgba(0,0,0,.35)]">
+                    {STATES.map((s) => {
+                      const active = followState === s.key
+                      return (
+                        <button
+                          key={s.key}
+                          type="button"
+                          onClick={() => {
+                            setStateMenuOpen(false)
+                            if (!active)
+                              tracking.mutate({ method: 'put', path: `/api/shows/${showId}/follow`, body: { state: s.key } })
+                          }}
+                          className={`flex w-full items-center justify-between px-4 py-2.75 text-left text-[13px] ${
+                            active ? 'text-accent font-extrabold' : 'text-text font-bold'
+                          }`}
+                        >
+                          {t(s.labelKey)}
+                          {active && <span>✓</span>}
+                        </button>
+                      )
+                    })}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStateMenuOpen(false)
+                        tracking.mutate({ method: 'delete', path: `/api/shows/${showId}/follow` })
+                      }}
+                      className="text-muted w-full border-t border-line px-4 py-2.75 text-left text-[13px] font-bold"
+                    >
+                      {t('show.unfollow')}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Progress */}
@@ -241,7 +310,7 @@ export default function ShowDetail() {
         </div>
         <div className="bg-track h-1.75 overflow-hidden rounded">
           <div
-            className="bg-accent h-full rounded"
+            className={`h-full rounded ${airedEps.length > 0 && seenCount === airedEps.length ? 'bg-green' : 'bg-accent'}`}
             style={{ width: `${airedEps.length ? (seenCount / airedEps.length) * 100 : 0}%` }}
           />
         </div>
